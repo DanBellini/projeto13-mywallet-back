@@ -1,7 +1,7 @@
 import db from "../database/db.js";
 
 async function authSessionMidleware(req, res, next) {
-    const { authorization } = req.readers;
+    const { authorization } = req.headers;
 
     const token = authorization?.replace("Bearer ","");
 
@@ -9,19 +9,21 @@ async function authSessionMidleware(req, res, next) {
         return res.status(401).send("Chave não encontrada, tente novamente!")
     };
     try {
+        const session = await db.collection('sessions').findOne({token: token});
 
-        const session = await db.collection('sessions').findOne({token});
         if(!session){
             return res.status(401).send("Essa sessão não existe!");
         };
 
-        const user = await db.collection('users').findOne({_id: session.userId});
-        if(!user){
+        const userId = await db.collection('users').findOne({_id: session.user});
+
+        if(!userId){
             return res.status(401).send("Usuário não encontrado!")
         };
 
-        res.locals.user = user
+        res.locals.user = userId
         next()
+
 
     } catch (error) {
         console.log(error)
