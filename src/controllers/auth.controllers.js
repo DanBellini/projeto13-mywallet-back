@@ -28,7 +28,7 @@ async function registerUser (req, res) {
             password: passwordHash
         });
 
-        res.sendStatus(200);
+        return res.sendStatus(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -64,7 +64,7 @@ async function singInUser (req, res) {
             user: user._id,
         })
 
-        res.status(200).send({token, name: user.name})
+        return res.status(200).send({token, name: user.name})
     } catch (error) {
         console.log(error)
         res.sendStatus(500)
